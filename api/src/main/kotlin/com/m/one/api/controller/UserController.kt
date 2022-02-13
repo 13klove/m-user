@@ -29,14 +29,14 @@ class UserController(
     }
 
     @Operation(summary = "user info", description = "회원 정보")
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     fun getUser(@PathVariable id: Long, @RequestParam email: String): UserResponse {
         logger.info { "url: /users/id/$id, param: $email" }
         return userService.getUser(id, email)
     }
 
     @Operation(summary = "user info update", description = "회원 정보 수정")
-    @PutMapping("/id/{id}")
+    @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody userUpdateRequest: UserUpdateRequest): UserResponse {
         logger.info { "url: /users/id/$id, param: $userUpdateRequest" }
         return userService.update(id, userUpdateRequest)
