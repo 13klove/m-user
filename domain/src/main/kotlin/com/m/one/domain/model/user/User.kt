@@ -15,20 +15,18 @@ class User(
     var password: String,
     @Enumerated(value = EnumType.STRING)
     var role: Role,
-    var salt: String,
     var createdAt: Long,
     var updatedAt: Long,
     var deletedAt: Long? = null
 ) {
 
     companion object {
-        fun create(email: String, password: String, role: Role, salt: String): User {
+        fun create(email: String, password: String, role: Role): User {
             val nowTimestamp = Instant.now().toEpochMilli()
             return User(
                 email = email,
                 password = password,
                 role = role,
-                salt = salt,
                 createdAt = nowTimestamp,
                 updatedAt = nowTimestamp
             )

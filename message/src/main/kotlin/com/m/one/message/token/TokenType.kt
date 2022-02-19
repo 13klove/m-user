@@ -1,4 +1,4 @@
-package com.m.one.domain.model.type
+package com.m.one.message.token
 
 enum class TokenType {
 

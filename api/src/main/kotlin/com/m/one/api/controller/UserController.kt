@@ -1,6 +1,8 @@
 package com.m.one.api.controller
 
 import com.m.one.api.controller.UserController.Companion.BASE_URL
+import com.m.one.api.service.LoginService
+import com.m.one.api.service.UserApiService
 import com.m.one.domain.service.user.UserService
 import com.m.one.message.token.UserToken
 import com.m.one.message.user.LoginRequest
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("$BASE_URL")
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
+    private val userApiService: UserApiService,
+    private val loginService: LoginService
 ) {
 
     companion object : KLogging() {
@@ -24,8 +28,8 @@ class UserController(
     @Operation(summary = "sign up", description = "회원 가입")
     @PostMapping
     fun reg(@RequestBody userRequest: UserRequest): UserResponse {
-        logger.info { "url: /users, param: ${userRequest.toString()}" }
-        return userService.insert(userRequest.email, userRequest.password)
+        logger.info { "url: /users, param: $userRequest" }
+        return userApiService.reg(userRequest.email, userRequest.password)
     }
 
     @Operation(summary = "user info", description = "회원 정보")
@@ -42,11 +46,11 @@ class UserController(
         return userService.update(id, userUpdateRequest)
     }
 
-    @Operation(summary = "sign in", description = "로그인")
+    @Operation(summary = "sign up", description = "로그인")
     @PostMapping("/login")
     fun login(@RequestBody loginRequest: LoginRequest): UserToken {
         logger.info { "url: /users/login, param: $loginRequest" }
-        return userService.login(loginRequest.email, loginRequest.password)
+        return loginService.signUp(loginRequest.email, loginRequest.password)
     }
 
 }

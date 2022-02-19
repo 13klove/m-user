@@ -1,6 +1,6 @@
 package com.m.one.domain.service.user
 
-import com.m.one.domain.model.type.TokenType
+import com.m.one.message.token.TokenType
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.junit.jupiter.api.Assertions
@@ -18,7 +18,7 @@ class UserServiceTest {
     fun `jwt 암호화 복호화 테스트`(){
         val key = UUID.randomUUID().toString()
         val now = Date()
-        val claimsMap = mutableMapOf<String, Any>("tokenType" to "base", "email" to "abc@xxx.com")
+        val claimsMap = mutableMapOf<String, Any>("email" to "abc@xxx.com")
         val jwt = Jwts.builder()
             .setHeaderParam("tokenType", TokenType.BASE)
             .setClaims(claimsMap)

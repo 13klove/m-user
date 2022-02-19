@@ -16,3 +16,7 @@ token:
   expired:
     base: 86400000
     refresh: 87000000
+
+service:
+  auth:
+    url: http://localhost:8081/

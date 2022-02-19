@@ -3,26 +3,16 @@ package com.m.one.domain.service.user
 import com.m.one.domain.exception.AlreadyUserException
 import com.m.one.domain.exception.NoUserException
 import com.m.one.domain.model.type.Role
-import com.m.one.domain.model.type.TokenType
 import com.m.one.domain.model.user.User
 import com.m.one.domain.repository.user.UserRepository
-import com.m.one.domain.service.token.TokenService
-import com.m.one.message.token.UserToken
 import com.m.one.message.user.UserResponse
 import com.m.one.message.user.UserUpdateRequest
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.awt.print.Pageable
-import java.security.Key
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.*
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +21,6 @@ class UserService(
     private val baseExpired: Long,
     @Value("\${token.expired.refresh}")
     private val refreshExpired: Long,
-    private val tokenService: TokenService,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
@@ -52,7 +41,6 @@ class UserService(
                 email,
                 passwordEncoder.encode(password),
                 Role.USER,
-                UUID.randomUUID().toString()
             )
         ).toUserResponse()
     }
@@ -73,25 +61,21 @@ class UserService(
         }
     }
 
-    fun login(email: String, password: String): UserToken {
-        userRepository.findByEmail(email)?.let {
-            if (passwordEncoder.matches(password, it.password)) {
-                val detail = mutableMapOf<String, Any>("email" to it.email)
-                return UserToken(
-                    tokenService.getToken(TokenType.BASE, it.salt, baseExpired, detail),
-                    tokenService.getToken(TokenType.REFRESH, it.salt, refreshExpired, detail)
-                )
-            } else {
-                throw NoUserException(NO_USER_MSG)
-            }
+    fun getUser(id: Long, email: String): UserResponse {
+        return userRepository.findByIdAndEmail(id, email)?.run {
+            this.toUserResponse()
         } ?: run {
             throw NoUserException(NO_USER_MSG)
         }
     }
 
-    fun getUser(id: Long, email: String): UserResponse {
-        return userRepository.findByIdAndEmail(id, email)?.run {
-            this.toUserResponse()
+    fun getUser(email: String, password: String): User {
+        return userRepository.findByEmail(email)?.let {
+            if (!passwordEncoder.matches(password, it.password)) {
+                throw NoUserException(NO_USER_MSG)
+            } else {
+                it
+            }
         } ?: run {
             throw NoUserException(NO_USER_MSG)
         }
