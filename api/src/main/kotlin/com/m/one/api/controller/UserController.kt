@@ -34,9 +34,12 @@ class UserController(
 
     @Operation(summary = "user info", description = "회원 정보")
     @GetMapping("/{id}")
-    fun getUser(@PathVariable id: Long, @RequestParam email: String): UserResponse {
-        logger.info { "url: /users/id/$id, param: $email" }
-        return userService.getUser(id, email)
+    fun getUser(
+        @RequestHeader("H-USER-ID") header: String,
+        @PathVariable id: Long
+    ): UserResponse {
+        logger.info { "url: /users/id/$id header: $header" }
+        return userService.getUser(id)
     }
 
     @Operation(summary = "user info update", description = "회원 정보 수정")

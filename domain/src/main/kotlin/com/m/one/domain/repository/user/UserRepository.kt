@@ -2,6 +2,7 @@ package com.m.one.domain.repository.user
 
 import com.m.one.domain.model.user.User
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
 interface UserRepository: JpaRepository<User, Long> {
 

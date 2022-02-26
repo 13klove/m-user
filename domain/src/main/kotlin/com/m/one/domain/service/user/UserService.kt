@@ -61,12 +61,10 @@ class UserService(
         }
     }
 
-    fun getUser(id: Long, email: String): UserResponse {
-        return userRepository.findByIdAndEmail(id, email)?.run {
-            this.toUserResponse()
-        } ?: run {
-            throw NoUserException(NO_USER_MSG)
-        }
+    fun getUser(id: Long): UserResponse {
+        val optionUser = userRepository.findById(id)
+        if(!optionUser.isPresent) throw NoUserException(NO_USER_MSG)
+        return optionUser.get().toUserResponse()
     }
 
     fun getUser(email: String, password: String): User {
